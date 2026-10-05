@@ -56,7 +56,7 @@ in n8n.
 copied (never moved) and checked, every credential decrypted inside the container as a check, active workflows and
 webhooks compared, your old install only stopped - and never two n8n at once, also after a reboot. For n8n run by
 systemd or pm2; tested with SQLite and Postgres.
-Link: https://antrikos.gumroad.com/l/n8n-move-kit
+Link: https://localhavenstore.gumroad.com/l/n8n-move-kit
 
 ## Licence
 
