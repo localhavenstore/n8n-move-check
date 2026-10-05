@@ -6,6 +6,9 @@ was written - use it when it is out).
 
 **Move Check** is one read-only script that tells you what *your* move involves, before you touch anything.
 
+Doing the move by hand? The free step-by-step guide - encryption key, permissions, same version first, checks:
+https://localhavenstore.github.io/guides/n8n-npm-to-docker.html
+
 Get it from https://github.com/localhavenstore/n8n-move-check (download `move-check.js`, or `git clone` the repo),
 then run it with Node on the machine where n8n runs:
 
