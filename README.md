@@ -61,3 +61,10 @@ Link: https://localhavenstore.gumroad.com/l/n8n-move-kit
 ## Licence
 
 MIT - see LICENSE. No warranty. Made with AI assistance and tested as above. Not affiliated with or endorsed by n8n GmbH; n8n is their trademark.
+
+
+## Support
+
+The tool is free and stays free. If it saved you time, you can leave a tip:
+[![Tip on Ko-fi](https://img.shields.io/badge/Ko--fi-leave%20a%20tip-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/localhaven)
+(optional - nothing is unlocked by it).
