@@ -91,6 +91,8 @@ check "Function node = 3.0 blocker by workflow name" 'grep -q "BLOCKER.*Function
 check "host paths INSIDE Execute Command flagged (/home/n8nuser/data/in.mp4)" 'grep -q "host paths used in Execute Command: .*/home/n8nuser/data/in.mp4" <<< "$OUT"'
 check "host file path flagged (/home/n8nuser/data)" 'grep -q "/home/n8nuser/data" <<< "$OUT"'
 check "community node package listed (n8n-nodes-demo)" 'grep -q "n8n-nodes-demo" <<< "$OUT"'
+check "3.0 default: unverified packages off named (N8N_UNVERIFIED_PACKAGES_ENABLED)" 'grep -q "DECIDE.*N8N_UNVERIFIED_PACKAGES_ENABLED changes from true to false in 3.0.*n8n-nodes-demo" <<< "$OUT"'
+check "3.0 timeout line cites the breaking-changes page" 'grep -q "300 s to 60 s in 3.0 (n8n v3.0 breaking-changes page)" <<< "$OUT"'
 check "community package with native code = blocker (fake-native)" 'grep -q "BLOCKER.*native code: fake-native" <<< "$OUT"'
 check "Node requirement reported from n8n's own package.json" 'grep -q "satisfies n8n.s requirement (>=24" <<< "$OUT"'
 check "~/.n8n-files flagged as outside the user folder" 'grep -q "file folder /home/n8nuser/.n8n-files .*OUTSIDE the user folder" <<< "$OUT"'

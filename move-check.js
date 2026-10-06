@@ -6,7 +6,7 @@
 "use strict";
 const fs = require("fs"), os = require("os"), path = require("path"), cp = require("child_process"), crypto = require("crypto");
 
-const VERSION = "1.0.1";
+const VERSION = "1.0.2";
 const SAFE_ENV_SHOWN = new Set(["N8N_PORT", "N8N_HOST", "N8N_PROTOCOL", "WEBHOOK_URL", "GENERIC_TIMEZONE", "TZ", "DB_TYPE",
   "DB_POSTGRESDB_HOST", "DB_POSTGRESDB_PORT", "DB_POSTGRESDB_DATABASE", "N8N_USER_FOLDER", "EXECUTIONS_MODE",
   "N8N_RUNNERS_ENABLED", "N8N_BINARY_DATA_MODE"]);                     // non-secret settings: value shown
@@ -120,7 +120,7 @@ const V3_REMOVED = { N8N_PRE_EXECUTE_ERROR_CREATES_EXECUTION: "removed - delete 
 for (const [k, why] of Object.entries(V3_REMOVED)) if (E[k] !== undefined) add("n8n 3.0", "DECIDE", `${k} is ${why} in 3.0`);
 if (E.N8N_BINARY_DATA_STORAGE_PATH !== undefined) add("n8n 3.0", "INFO", "N8N_BINARY_DATA_STORAGE_PATH is deprecated - n8n says use N8N_STORAGE_PATH (set it to the same folder)");
 if ((E.N8N_DEFAULT_BINARY_DATA_MODE || "") === "default") add("n8n 3.0", "BLOCKER", "N8N_DEFAULT_BINARY_DATA_MODE=default is removed in 3.0 - switch to filesystem (or s3/azure/database) first");
-if (E.N8N_RUNNERS_TASK_TIMEOUT === undefined) add("n8n 3.0", "INFO", "Code node task timeout drops from 300 s to 60 s in 3.0 - set N8N_RUNNERS_TASK_TIMEOUT if a Code step runs longer than a minute");
+if (E.N8N_RUNNERS_TASK_TIMEOUT === undefined) add("n8n 3.0", "INFO", "Code node task timeout drops from 300 s to 60 s in 3.0 (n8n v3.0 breaking-changes page) - set N8N_RUNNERS_TASK_TIMEOUT if a Code step runs longer than a minute");
 
 const home = main ? (sh("getent", ["passwd", main.user]) || "").split(":")[5] || os.homedir() : os.homedir();
 const userFolder = E.N8N_USER_FOLDER ? path.join(E.N8N_USER_FOLDER, ".n8n") : path.join(home, ".n8n");
@@ -198,6 +198,7 @@ const community = Object.keys(byType).filter((t) => !/^(n8n-nodes-base|@n8n\/n8n
 let installed = []; try { installed = Object.keys(JSON.parse(fs.readFileSync(path.join(userFolder, "nodes", "package.json"), "utf8")).dependencies || {}); } catch {}
 if (installed.length || community.length) add("nodes", "DECIDE", `community nodes installed: ${installed.join(", ") || "none"}; used: ${[...new Set(community.map((t) => t.split(".")[0]))].join(", ") || "none"} - they move with the user folder; n8n 3.0 disables UNVERIFIED community packages by default (check each one's status in n8n)`);
 
+if (installed.length && E.N8N_UNVERIFIED_PACKAGES_ENABLED === undefined) add("n8n 3.0", "DECIDE", `N8N_UNVERIFIED_PACKAGES_ENABLED changes from true to false in 3.0 (n8n v3.0 breaking-changes page) - check whether ${installed.join(", ")} ${installed.length > 1 ? "are" : "is"} verified in n8n; set N8N_UNVERIFIED_PACKAGES_ENABLED=true in the Docker env only if you need an unverified one`);
 const nm = path.join(userFolder, "nodes", "node_modules"), native = new Set();
 const walkN = (d, pkg, depth) => { if (depth > 8) return; let es = []; try { es = fs.readdirSync(d, { withFileTypes: true }); } catch {}
   for (const e of es) if (e.isDirectory()) walkN(path.join(d, e.name), pkg, depth + 1); else if (e.name.endsWith(".node")) native.add(pkg); };

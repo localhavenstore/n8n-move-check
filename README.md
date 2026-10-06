@@ -38,8 +38,13 @@ Each line is `OK`, `INFO`, `DECIDE` (you have to choose something) or `BLOCKER` 
 - n8n 3.0 blockers by workflow name: the 36 node types that are gone in the n8n v3 release-candidate image
   (`v3-rc-20261005`, compared with 2.41.5 - Function, Function Item, Cron, Interval, Item Lists, Read Binary File(s),
   Read PDF, Convert to/from binary data, legacy OpenAI and 21 legacy AI/LangChain nodes), removed Code-node helpers,
-  and 3.0 setting changes (removed variables, `N8N_DEFAULT_BINARY_DATA_MODE=default`, the 60 s Code-node timeout)
+  and 3.0 setting changes (removed variables, `N8N_DEFAULT_BINARY_DATA_MODE=default`, the 60 s Code-node timeout, unverified community packages off by default)
 - Free disk space for a copy plus a backup, and whether Docker is installed
+
+## Changes in 1.0.2 (6 Oct 2026)
+- n8n 3.0 new defaults from n8n's official v3.0 breaking-changes page: if you have community packages installed, the check now
+  names `N8N_UNVERIFIED_PACKAGES_ENABLED` (true -> false in 3.0) and says when to set it; the Code-step timeout note
+  (`N8N_RUNNERS_TASK_TIMEOUT` 300 -> 60 s) cites the page. Re-tested on throw-away VMs (systemd, pm2, manual, npx).
 
 ## Changes in 1.0.1 (6 Oct 2026)
 The removed-node list now comes from the n8n v3 RC image itself (36 types, AI Transform reported as INFO - n8n
@@ -63,7 +68,7 @@ in n8n.
 copied (never moved) and checked, every credential decrypted inside the container as a check, active workflows and
 webhooks compared, your old install only stopped - and never two n8n at once, also after a reboot. For n8n run by
 systemd or pm2; tested with SQLite and Postgres.
-Link: (added at release)
+Link: https://localhavenstore.gumroad.com/l/n8n-move-kit
 
 ## Licence
 

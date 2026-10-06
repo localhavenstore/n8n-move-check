@@ -1,4 +1,4 @@
-== n8n Move Check VM test 2026-10-04T07:37:04+03:00 - n8n 2.41.5, Node 24.21.0, manual + SQLite
+== n8n Move Check VM test 2026-10-06T17:05:41+03:00 - n8n 2.41.5, Node 24.21.0, manual + SQLite
 Ubuntu 24.04.5 LTS
 4
 7 GB
@@ -12,38 +12,40 @@ npm notice
 {"status":"ok"}
 ok   SETUP real npm install: n8n --version = 2.41.5
 ok   SETUP n8n running (manual) and healthy
-   | n8n Move Check 1.0.0 - read-only; nothing was changed
+   | n8n Move Check 1.0.2 - read-only; nothing was changed
    | 
    | BLOCKER [n8n 3.0] Function node is removed in 3.0 - used in: Legacy function flow (replace it before upgrading; the move itself is fine)
    | BLOCKER [nodes] community package(s) with native code: fake-native - built for this system, they do not run in the official image (Alpine). Reinstall them inside Docker from n8n's settings after the move, or move by hand
    | DECIDE  [run] started by hand - nothing restarts it automatically; for a move with automatic rollback run it under systemd or pm2 first (Move Kit Pro requires that)
    | DECIDE  [data] n8n's file folder /home/n8nuser/.n8n-files (default for Read/Write Files) is OUTSIDE the user folder - copy it too and mount it at the same path, or workflows that read/write there break
    | DECIDE  [run] n8n runs as n8nuser (uid 1001); the official image runs as uid 1000 - run the container as 1001:1001 (and give it a writable home) so host folders keep the same rights
-   | DECIDE  [key] encryption key found in the environment (N8N_ENCRYPTION_KEY) (fingerprint d7e7c8ab09d8). The Docker n8n MUST get exactly this key - without it no credential can be decrypted. Save it in your password manager now.
+   | DECIDE  [key] encryption key found in the environment (N8N_ENCRYPTION_KEY) (fingerprint b3366d35aa2f). The Docker n8n MUST get exactly this key - without it no credential can be decrypted. Save it in your password manager now.
    | DECIDE  [host] Execute Command runs INSIDE the container after the move. Commands used: ffmpeg - each must exist in the image (or a small custom image) and any host files must be mounted
    | DECIDE  [host] host paths used in Execute Command: /home/n8nuser/data/in.mp4, /home/n8nuser/data/out.mp3 - these folders must be mounted into the container
    | DECIDE  [host] files read/written on the host: /home/n8nuser/data/report.txt - these folders must be mounted into the container
    | DECIDE  [nodes] community nodes installed: n8n-nodes-demo; used: n8n-nodes-demo - they move with the user folder; n8n 3.0 disables UNVERIFIED community packages by default (check each one's status in n8n)
+   | DECIDE  [n8n 3.0] N8N_UNVERIFIED_PACKAGES_ENABLED changes from true to false in 3.0 (n8n v3.0 breaking-changes page) - check whether n8n-nodes-demo is verified in n8n; set N8N_UNVERIFIED_PACKAGES_ENABLED=true in the Docker env only if you need an unverified one
    | DECIDE  [docker] Docker is not installed yet (Docker Engine + compose plugin needed for the move)
    | OK      [version] Node 24.21.0 satisfies n8n's requirement (>=24.0.0)
-   | OK      [disk] user folder 5 MB, free 12436 MB (the move needs a full copy + a backup)
-   | INFO    [run] n8n is running (pid 3504, user n8nuser), started by manual
+   | OK      [disk] user folder 5 MB, free 12432 MB (the move needs a full copy + a backup)
+   | INFO    [run] n8n is running (pid 3488, user n8nuser), started by manual
    | INFO    [version] n8n 2.41.5 on Node 24.21.0 - the Docker move should use EXACTLY n8n 2.41.5 first, upgrade to 3.0 later
-   | INFO    [env] 6 n8n settings in its environment: GENERIC_TIMEZONE=Europe/Nicosia, N8N_ENCRYPTION_KEY, N8N_PORT=5678, N8N_SECURE_COOKIE, NODES_EXCLUDE, WEBHOOK_URL=http://***@localhost:5678/...
+   | INFO    [env] 6 n8n settings in its environment: GENERIC_TIMEZONE=Europe/(redacted), N8N_ENCRYPTION_KEY, N8N_PORT=5678, N8N_SECURE_COOKIE, NODES_EXCLUDE, WEBHOOK_URL=http://***@localhost:5678/...
+   | INFO    [n8n 3.0] Code node task timeout drops from 300 s to 60 s in 3.0 (n8n v3.0 breaking-changes page) - set N8N_RUNNERS_TASK_TIMEOUT if a Code step runs longer than a minute
    | INFO    [data] user folder: /home/n8nuser/.n8n
    | INFO    [env] NODES_EXCLUDE is set (in n8n 2.x it is how Execute Command / Local File Trigger get enabled) - it must go into the Docker .env too
    | INFO    [db] SQLite /home/n8nuser/.n8n/database.sqlite (1.4 MB) - copied with the user folder
    | INFO    [export] 3 workflows (0 active), 0 credentials
    | 
-   | 2 blocker(s), 9 decision(s). Report saved to move-report.json (no secrets inside).
-   before | e34304e890aad1c59daae03be22d0191a1790b4a64b5be710863dddf03d7a73a  -
-   before | workflow_entity 508524a494811b4bff0ea44d71f0bc44c9205e8fb249102c021234ed14d49138  -
+   | 2 blocker(s), 10 decision(s). Report saved to move-report.json (no secrets inside).
+   before | ab7e43a7630acd7bb67eddc4b3fc73d4a1dd4e4a7d0c6e7de459fb9c6c15fba8  -
+   before | workflow_entity 81ffa1a7d3a58f5b80ccc62dafd9cc5c5051c43d8dbbdd43bc1109d49d9ca546  -
    before | credentials_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
-   before | shared_workflow 80ec0272293e55148fbbd35fdf958ee738deb0e0d0a34f7544e8e97505ad1747  -
+   before | shared_workflow 1a29f02423359fb60e84ec92233ae12a1d4593f01bc524f42bee72a62a047943  -
    before | shared_credentials e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
-   before | project bc2a1daea60ea55bd479e304e3a2cc21cf5530ccfb2699e4fc3d9a5f36842a71  -
-   before | project_relation 8250a01a86eb936bcb8c34edfb59313b0840c70a1db17d4beacba71aa8eaeac4  -
-   before | user 30f4285c1a61ccb0df6b45e0d369e9d1f41c7f1caedd712fc7a16b432915d1c2  -
+   before | project b2acc38b2d0525e7bf67afe76d0c6ff81bda9a0678784dbbc28cf381ba94a7ae  -
+   before | project_relation 223562f61fbe098b16a3e345b962ab8322b048a80aac251aec24b246a71afb11  -
+   before | user 69fc7324f7e929ef4898f07d18edcb5b26533ed8c4707e856546413b7bd5f11d  -
    before | webhook_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
    before | tag_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
    before | workflows_tags e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
@@ -55,7 +57,7 @@ ok   M1 no secret in output/report (key, env secret, password inside WEBHOOK_URL
 ok   report file is private (mode 600)
 ok   M2 detects a hand-started n8n
 ok   detects the n8n version (2.41.5)
-ok   key fingerprint = sha256(key)[:12] (d7e7c8ab09d8)
+ok   key fingerprint = sha256(key)[:12] (b3366d35aa2f)
 ok   env var NAMES listed, secret value not; WEBHOOK_URL shown without its password
 ok   workflow count (3)
 ok   Execute Command flagged with its command (ffmpeg)
@@ -63,6 +65,8 @@ ok   Function node = 3.0 blocker by workflow name
 ok   host paths INSIDE Execute Command flagged (/home/n8nuser/data/in.mp4)
 ok   host file path flagged (/home/n8nuser/data)
 ok   community node package listed (n8n-nodes-demo)
+ok   3.0 default: unverified packages off named (N8N_UNVERIFIED_PACKAGES_ENABLED)
+ok   3.0 timeout line cites the breaking-changes page
 ok   community package with native code = blocker (fake-native)
 ok   Node requirement reported from n8n's own package.json
 ok   ~/.n8n-files flagged as outside the user folder
@@ -73,5 +77,5 @@ ok   as the n8n user (no sudo) it still reports key + workflows
    pro plan | STOP: n8n was started by hand: this kit moves n8n run by systemd or pm2 (so a failed move can start it again by itself). Run it under systemd or pm2 first - see the guide.
    pro plan | rc=1
 ok   Pro plan refuses a manual install with the reason (nothing written)
-PASS 24  FAIL 0
+PASS 26  FAIL 0
 OVERALL: PASS

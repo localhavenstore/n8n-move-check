@@ -1,4 +1,4 @@
-== n8n Move Check VM test 2026-10-05T23:15:30+03:00 - n8n 2.41.5, Node 24.21.0, systemd + SQLite
+== n8n Move Check VM test 2026-10-06T16:54:29+03:00 - n8n 2.41.5, Node 24.21.0, systemd + SQLite
 Ubuntu 24.04.5 LTS
 4
 7 GB
@@ -12,39 +12,40 @@ npm notice
 {"status":"ok"}
 ok   SETUP real npm install: n8n --version = 2.41.5
 ok   SETUP n8n running (systemd) and healthy
-   | n8n Move Check 1.0.0 - read-only; nothing was changed
+   | n8n Move Check 1.0.2 - read-only; nothing was changed
    | 
    | BLOCKER [n8n 3.0] Function node is removed in 3.0 - used in: Legacy function flow (replace it before upgrading; the move itself is fine)
    | BLOCKER [nodes] community package(s) with native code: fake-native - built for this system, they do not run in the official image (Alpine). Reinstall them inside Docker from n8n's settings after the move, or move by hand
    | DECIDE  [run] systemd: after the move, stop (not disable) n8n.service until the Docker one is verified
    | DECIDE  [data] n8n's file folder /home/n8nuser/.n8n-files (default for Read/Write Files) is OUTSIDE the user folder - copy it too and mount it at the same path, or workflows that read/write there break
    | DECIDE  [run] n8n runs as n8nuser (uid 1001); the official image runs as uid 1000 - run the container as 1001:1001 (and give it a writable home) so host folders keep the same rights
-   | DECIDE  [key] encryption key found in the environment (N8N_ENCRYPTION_KEY) (fingerprint 3388356df00f). The Docker n8n MUST get exactly this key - without it no credential can be decrypted. Save it in your password manager now.
+   | DECIDE  [key] encryption key found in the environment (N8N_ENCRYPTION_KEY) (fingerprint a4b4403faa84). The Docker n8n MUST get exactly this key - without it no credential can be decrypted. Save it in your password manager now.
    | DECIDE  [host] Execute Command runs INSIDE the container after the move. Commands used: ffmpeg - each must exist in the image (or a small custom image) and any host files must be mounted
    | DECIDE  [host] host paths used in Execute Command: /home/n8nuser/data/in.mp4, /home/n8nuser/data/out.mp3 - these folders must be mounted into the container
    | DECIDE  [host] files read/written on the host: /home/n8nuser/data/report.txt - these folders must be mounted into the container
    | DECIDE  [nodes] community nodes installed: n8n-nodes-demo; used: n8n-nodes-demo - they move with the user folder; n8n 3.0 disables UNVERIFIED community packages by default (check each one's status in n8n)
+   | DECIDE  [n8n 3.0] N8N_UNVERIFIED_PACKAGES_ENABLED changes from true to false in 3.0 (n8n v3.0 breaking-changes page) - check whether n8n-nodes-demo is verified in n8n; set N8N_UNVERIFIED_PACKAGES_ENABLED=true in the Docker env only if you need an unverified one
    | DECIDE  [docker] Docker is not installed yet (Docker Engine + compose plugin needed for the move)
    | OK      [version] Node 24.21.0 satisfies n8n's requirement (>=24.0.0)
-   | OK      [disk] user folder 5 MB, free 12425 MB (the move needs a full copy + a backup)
-   | INFO    [run] n8n is running (pid 3575, user n8nuser), started by systemd (n8n.service)
+   | OK      [disk] user folder 5 MB, free 12424 MB (the move needs a full copy + a backup)
+   | INFO    [run] n8n is running (pid 3571, user n8nuser), started by systemd (n8n.service)
    | INFO    [version] n8n 2.41.5 on Node 24.21.0 - the Docker move should use EXACTLY n8n 2.41.5 first, upgrade to 3.0 later
-   | INFO    [env] 6 n8n settings in its environment: GENERIC_TIMEZONE=Europe/Nicosia, N8N_ENCRYPTION_KEY, N8N_PORT=5678, N8N_SECURE_COOKIE, NODES_EXCLUDE, WEBHOOK_URL=http://***@localhost:5678/...
-   | INFO    [n8n 3.0] Code node task timeout drops from 300 s to 60 s in 3.0 - set N8N_RUNNERS_TASK_TIMEOUT if a Code step runs longer than a minute
+   | INFO    [env] 6 n8n settings in its environment: GENERIC_TIMEZONE=Europe/(redacted), N8N_ENCRYPTION_KEY, N8N_PORT=5678, N8N_SECURE_COOKIE, NODES_EXCLUDE, WEBHOOK_URL=http://***@localhost:5678/...
+   | INFO    [n8n 3.0] Code node task timeout drops from 300 s to 60 s in 3.0 (n8n v3.0 breaking-changes page) - set N8N_RUNNERS_TASK_TIMEOUT if a Code step runs longer than a minute
    | INFO    [data] user folder: /home/n8nuser/.n8n
    | INFO    [env] NODES_EXCLUDE is set (in n8n 2.x it is how Execute Command / Local File Trigger get enabled) - it must go into the Docker .env too
    | INFO    [db] SQLite /home/n8nuser/.n8n/database.sqlite (1.4 MB) - copied with the user folder
    | INFO    [export] 3 workflows (0 active), 0 credentials
    | 
-   | 2 blocker(s), 9 decision(s). Report saved to move-report.json (no secrets inside).
-   before | 7499e68f393d0678ad972608b73df383d612c5e8de892a3ce4b14eabba76662a  -
-   before | workflow_entity 3ee7eabd4c06cdb8e436f90a5229e51b7bd15bda34e867e9e716a9666e29865a  -
+   | 2 blocker(s), 10 decision(s). Report saved to move-report.json (no secrets inside).
+   before | 265cf5259563b07d7cf6bcf82b55398c9d8cdd6c7f5a759c105a500ad7e870df  -
+   before | workflow_entity bfb53d65aca16a768c513ac16fdf8a6cd4b279c86d83a4fdd71710fc03bfbb62  -
    before | credentials_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
-   before | shared_workflow c80f5f49045d8d5dadada8e76b8bdfbd73e0c66804c28733f483476aa9669110  -
+   before | shared_workflow 6671eb4768d96159aa66d02a6f8e66e35e1393e0540690069fe01753a24fdd78  -
    before | shared_credentials e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
-   before | project 82c916e5e1534973fee5d4b18b837c1b7ea5ba074cc5310328df2e5fd3aac41b  -
-   before | project_relation 669a1944154d3ccfc4143c16c72d95da20a4614813079ec1a6be418ab20e44ce  -
-   before | user fd7e45c328e6e415050697074dfee0a5b41a30d8131bf2fafc8b4b2125bff27a  -
+   before | project 06e4b28c0a260f154d697e9dc0eb06feff7b8065bffd84eb8e335aedf5f39e57  -
+   before | project_relation 652c6ab4856d61ffbba586604c434596223716c1ad21922853a39dbefc037309  -
+   before | user b13605fbb95ea70f2da3a0839fbac9706da6d6580997f03d28d695a4030283b1  -
    before | webhook_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
    before | tag_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
    before | workflows_tags e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
@@ -56,7 +57,7 @@ ok   M1 no secret in output/report (key, env secret, password inside WEBHOOK_URL
 ok   report file is private (mode 600)
 ok   M2 detects systemd + the unit name
 ok   detects the n8n version (2.41.5)
-ok   key fingerprint = sha256(key)[:12] (3388356df00f)
+ok   key fingerprint = sha256(key)[:12] (a4b4403faa84)
 ok   env var NAMES listed, secret value not; WEBHOOK_URL shown without its password
 ok   workflow count (3)
 ok   Execute Command flagged with its command (ffmpeg)
@@ -64,6 +65,8 @@ ok   Function node = 3.0 blocker by workflow name
 ok   host paths INSIDE Execute Command flagged (/home/n8nuser/data/in.mp4)
 ok   host file path flagged (/home/n8nuser/data)
 ok   community node package listed (n8n-nodes-demo)
+ok   3.0 default: unverified packages off named (N8N_UNVERIFIED_PACKAGES_ENABLED)
+ok   3.0 timeout line cites the breaking-changes page
 ok   community package with native code = blocker (fake-native)
 ok   Node requirement reported from n8n's own package.json
 ok   ~/.n8n-files flagged as outside the user folder
@@ -71,5 +74,5 @@ ok   NODES_EXCLUDE noted (must go into the Docker settings)
 ok   non-1000 uid of the n8n user flagged (container user)
 ok   SQLite found
 ok   as the n8n user (no sudo) it still reports key + workflows
-PASS 23  FAIL 0
+PASS 25  FAIL 0
 OVERALL: PASS
