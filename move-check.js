@@ -6,16 +6,40 @@
 "use strict";
 const fs = require("fs"), os = require("os"), path = require("path"), cp = require("child_process"), crypto = require("crypto");
 
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
 const SAFE_ENV_SHOWN = new Set(["N8N_PORT", "N8N_HOST", "N8N_PROTOCOL", "WEBHOOK_URL", "GENERIC_TIMEZONE", "TZ", "DB_TYPE",
   "DB_POSTGRESDB_HOST", "DB_POSTGRESDB_PORT", "DB_POSTGRESDB_DATABASE", "N8N_USER_FOLDER", "EXECUTIONS_MODE",
   "N8N_RUNNERS_ENABLED", "N8N_BINARY_DATA_MODE"]);                     // non-secret settings: value shown
-// n8n 3.0 removals (docs.n8n.io/changelog/v30-breaking-changes, checked 2026-10-03) -> node type ids
+// n8n 3.0 removals: node types present in n8n 2.41.5 but NOT in the n8n v3 RC image (v3-rc-20261005, diff of
+// dist/types/nodes.json, 2026-10-05; matches docs.n8n.io/changelog/v30-breaking-changes). AI Transform: migrated to Code.
 const REMOVED_NODES = {
-  "n8n-nodes-base.function": "Function", "n8n-nodes-base.functionItem": "Function Item", "n8n-nodes-base.itemLists": "Item Lists",
-  "n8n-nodes-base.cron": "Cron", "n8n-nodes-base.interval": "Interval", "n8n-nodes-base.htmlExtract": "HTML Extract",
-  "n8n-nodes-base.iCal": "iCalendar", "n8n-nodes-base.readBinaryFile": "Read Binary File", "n8n-nodes-base.readBinaryFiles": "Read Binary Files",
-  "n8n-nodes-base.writeBinaryFile": "Write Binary File", "n8n-nodes-base.readPDF": "Read PDF", "n8n-nodes-base.workflowTrigger": "Workflow Trigger",
+  "@n8n/n8n-nodes-langchain.code": "LangChain Code\n",
+  "@n8n/n8n-nodes-langchain.documentBinaryInputLoader": "Binary Input Loader\n",
+  "@n8n/n8n-nodes-langchain.documentGithubLoader": "GitHub Document Loader\n",
+  "@n8n/n8n-nodes-langchain.documentJsonInputLoader": "JSON Input Loader\n",
+  "@n8n/n8n-nodes-langchain.lmOpenAi": "OpenAI Model\n",
+  "@n8n/n8n-nodes-langchain.manualChatTrigger": "Manual Chat Trigger\n",
+  "@n8n/n8n-nodes-langchain.memoryChatRetriever": "Chat Messages Retriever\n",
+  "@n8n/n8n-nodes-langchain.memoryMotorhead": "Motorhead", "@n8n/n8n-nodes-langchain.memoryZep": "Zep\n",
+  "@n8n/n8n-nodes-langchain.openAiAssistant": "OpenAI Assistant\n",
+  "@n8n/n8n-nodes-langchain.toolHttpRequest": "HTTP Request Tool\n",
+  "@n8n/n8n-nodes-langchain.toolSerpApi": "SerpApi (Google Search)\n",
+  "@n8n/n8n-nodes-langchain.vectorStoreInMemoryInsert": "In Memory Vector Store Insert\n",
+  "@n8n/n8n-nodes-langchain.vectorStoreInMemoryLoad": "In Memory Vector Store Load\n",
+  "@n8n/n8n-nodes-langchain.vectorStorePineconeInsert": "Pinecone: Insert\n",
+  "@n8n/n8n-nodes-langchain.vectorStorePineconeLoad": "Pinecone: Load\n",
+  "@n8n/n8n-nodes-langchain.vectorStoreSupabaseInsert": "Supabase: Insert\n",
+  "@n8n/n8n-nodes-langchain.vectorStoreSupabaseLoad": "Supabase: Load\n",
+  "@n8n/n8n-nodes-langchain.vectorStoreZep": "Zep Vector Store\n",
+  "@n8n/n8n-nodes-langchain.vectorStoreZepInsert": "Zep Vector Store: Insert\n",
+  "@n8n/n8n-nodes-langchain.vectorStoreZepLoad": "Zep Vector Store: Load", "n8n-nodes-base.cron": "Cron\n",
+  "n8n-nodes-base.function": "Function", "n8n-nodes-base.functionItem": "Function Item\n",
+  "n8n-nodes-base.htmlExtract": "HTML Extract", "n8n-nodes-base.iCal": "iCalendar\n",
+  "n8n-nodes-base.interval": "Interval", "n8n-nodes-base.itemLists": "Item Lists\n",
+  "n8n-nodes-base.moveBinaryData": "Convert to/from binary data", "n8n-nodes-base.openAi": "OpenAI\n",
+  "n8n-nodes-base.orbit": "Orbit", "n8n-nodes-base.readBinaryFile": "Read Binary File\n",
+  "n8n-nodes-base.readBinaryFiles": "Read Binary Files", "n8n-nodes-base.readPDF": "Read PDF\n",
+  "n8n-nodes-base.workflowTrigger": "Workflow Trigger", "n8n-nodes-base.writeBinaryFile": "Write Binary File"
 };
 const FILE_NODES = new Set(["n8n-nodes-base.readWriteFile", "n8n-nodes-base.readBinaryFile", "n8n-nodes-base.readBinaryFiles", "n8n-nodes-base.writeBinaryFile"]);
 
@@ -90,6 +114,13 @@ const n8nVars = Object.keys(E).filter((k) => /^(N8N_|DB_|EXECUTIONS_|QUEUE_|NODE
 const noUserinfo = (v) => { const m = String(v).match(/^([a-z][a-z0-9+.-]*:\/\/)(?:[^\/@\s]*@)?([^\/?#\s]+)/i); return m ? `${m[1]}${/@/.test(String(v).split("/")[2] || "") ? "***@" : ""}${m[2]}/...` : String(v); };
 add("env", "INFO", `${n8nVars.length} n8n settings in its environment: ${n8nVars.map((k) => SAFE_ENV_SHOWN.has(k) ? `${k}=${noUserinfo(E[k])}` : k).join(", ") || "none"}`);
 if ((E.EXECUTIONS_MODE || "") === "queue") add("env", "BLOCKER", "queue mode (workers): not covered by this kit - move it by hand with n8n's docs");
+// n8n 3.0 settings changes (docs.n8n.io/changelog/v30-breaking-changes, checked 2026-10-05) - names/values only
+const V3_REMOVED = { N8N_PRE_EXECUTE_ERROR_CREATES_EXECUTION: "removed - delete it", N8N_MIGRATE_FS_STORAGE_PATH: "removed - delete it",
+  OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: "removed (queue mode always sends manual runs to workers)", N8N_DB_PING_TIMEOUT: "removed - use DB_PING_TIMEOUT_MS" };
+for (const [k, why] of Object.entries(V3_REMOVED)) if (E[k] !== undefined) add("n8n 3.0", "DECIDE", `${k} is ${why} in 3.0`);
+if (E.N8N_BINARY_DATA_STORAGE_PATH !== undefined) add("n8n 3.0", "INFO", "N8N_BINARY_DATA_STORAGE_PATH is deprecated - n8n says use N8N_STORAGE_PATH (set it to the same folder)");
+if ((E.N8N_DEFAULT_BINARY_DATA_MODE || "") === "default") add("n8n 3.0", "BLOCKER", "N8N_DEFAULT_BINARY_DATA_MODE=default is removed in 3.0 - switch to filesystem (or s3/azure/database) first");
+if (E.N8N_RUNNERS_TASK_TIMEOUT === undefined) add("n8n 3.0", "INFO", "Code node task timeout drops from 300 s to 60 s in 3.0 - set N8N_RUNNERS_TASK_TIMEOUT if a Code step runs longer than a minute");
 
 const home = main ? (sh("getent", ["passwd", main.user]) || "").split(":")[5] || os.homedir() : os.homedir();
 const userFolder = E.N8N_USER_FOLDER ? path.join(E.N8N_USER_FOLDER, ".n8n") : path.join(home, ".n8n");
@@ -137,6 +168,7 @@ add("export", workflows.length ? "INFO" : "DECIDE", workflows.length || creds.le
 // ---------- 6. what moves with extra work ----------
 const byType = {};
 for (const w of workflows) for (const n of w.nodes || []) (byType[n.type] = byType[n.type] || []).push({ wf: w.name, n });
+if (byType["n8n-nodes-base.aiTransform"]) add("n8n 3.0", "INFO", `AI Transform nodes are converted to Code nodes by 3.0 - check them after the upgrade: ${[...new Set(byType["n8n-nodes-base.aiTransform"].map((x) => x.wf))].join(", ")}`);
 for (const [t, label] of Object.entries(REMOVED_NODES)) if (byType[t]) add("n8n 3.0", "BLOCKER", `${label} node is removed in 3.0 - used in: ${[...new Set(byType[t].map((x) => x.wf))].join(", ")} (replace it before upgrading; the move itself is fine)`);
 const exprHits = workflows.filter((w) => JSON.stringify(w.nodes || []).match(/\$getPairedItem\(|\$evaluateExpression\(/));
 if (exprHits.length) add("n8n 3.0", "BLOCKER", `$getPairedItem()/$evaluateExpression() are removed in 3.0 - used in: ${exprHits.map((w) => w.name).join(", ")}`);

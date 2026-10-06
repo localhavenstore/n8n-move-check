@@ -1,4 +1,4 @@
-== n8n Move Check VM test 2026-10-04T07:25:40+03:00 - n8n 2.41.5, Node 24.21.0, systemd + SQLite
+== n8n Move Check VM test 2026-10-05T23:15:30+03:00 - n8n 2.41.5, Node 24.21.0, systemd + SQLite
 Ubuntu 24.04.5 LTS
 4
 7 GB
@@ -19,31 +19,32 @@ ok   SETUP n8n running (systemd) and healthy
    | DECIDE  [run] systemd: after the move, stop (not disable) n8n.service until the Docker one is verified
    | DECIDE  [data] n8n's file folder /home/n8nuser/.n8n-files (default for Read/Write Files) is OUTSIDE the user folder - copy it too and mount it at the same path, or workflows that read/write there break
    | DECIDE  [run] n8n runs as n8nuser (uid 1001); the official image runs as uid 1000 - run the container as 1001:1001 (and give it a writable home) so host folders keep the same rights
-   | DECIDE  [key] encryption key found in the environment (N8N_ENCRYPTION_KEY) (fingerprint 849274466659). The Docker n8n MUST get exactly this key - without it no credential can be decrypted. Save it in your password manager now.
+   | DECIDE  [key] encryption key found in the environment (N8N_ENCRYPTION_KEY) (fingerprint 3388356df00f). The Docker n8n MUST get exactly this key - without it no credential can be decrypted. Save it in your password manager now.
    | DECIDE  [host] Execute Command runs INSIDE the container after the move. Commands used: ffmpeg - each must exist in the image (or a small custom image) and any host files must be mounted
    | DECIDE  [host] host paths used in Execute Command: /home/n8nuser/data/in.mp4, /home/n8nuser/data/out.mp3 - these folders must be mounted into the container
    | DECIDE  [host] files read/written on the host: /home/n8nuser/data/report.txt - these folders must be mounted into the container
    | DECIDE  [nodes] community nodes installed: n8n-nodes-demo; used: n8n-nodes-demo - they move with the user folder; n8n 3.0 disables UNVERIFIED community packages by default (check each one's status in n8n)
    | DECIDE  [docker] Docker is not installed yet (Docker Engine + compose plugin needed for the move)
    | OK      [version] Node 24.21.0 satisfies n8n's requirement (>=24.0.0)
-   | OK      [disk] user folder 5 MB, free 12428 MB (the move needs a full copy + a backup)
-   | INFO    [run] n8n is running (pid 3583, user n8nuser), started by systemd (n8n.service)
+   | OK      [disk] user folder 5 MB, free 12425 MB (the move needs a full copy + a backup)
+   | INFO    [run] n8n is running (pid 3575, user n8nuser), started by systemd (n8n.service)
    | INFO    [version] n8n 2.41.5 on Node 24.21.0 - the Docker move should use EXACTLY n8n 2.41.5 first, upgrade to 3.0 later
-   | INFO    [env] 6 n8n settings in its environment: GENERIC_TIMEZONE=Europe/(redacted), N8N_ENCRYPTION_KEY, N8N_PORT=5678, N8N_SECURE_COOKIE, NODES_EXCLUDE, WEBHOOK_URL=http://***@localhost:5678/...
+   | INFO    [env] 6 n8n settings in its environment: GENERIC_TIMEZONE=Europe/Nicosia, N8N_ENCRYPTION_KEY, N8N_PORT=5678, N8N_SECURE_COOKIE, NODES_EXCLUDE, WEBHOOK_URL=http://***@localhost:5678/...
+   | INFO    [n8n 3.0] Code node task timeout drops from 300 s to 60 s in 3.0 - set N8N_RUNNERS_TASK_TIMEOUT if a Code step runs longer than a minute
    | INFO    [data] user folder: /home/n8nuser/.n8n
    | INFO    [env] NODES_EXCLUDE is set (in n8n 2.x it is how Execute Command / Local File Trigger get enabled) - it must go into the Docker .env too
    | INFO    [db] SQLite /home/n8nuser/.n8n/database.sqlite (1.4 MB) - copied with the user folder
    | INFO    [export] 3 workflows (0 active), 0 credentials
    | 
    | 2 blocker(s), 9 decision(s). Report saved to move-report.json (no secrets inside).
-   before | ef2162510fbeae1eaa99ffed117044669935bc0806abebaa2f3c70753a05a6bf  -
-   before | workflow_entity 53addba536b8ea5fab0e793f0cdaf5178b418143a1e7f8939be954b01db7cd30  -
+   before | 7499e68f393d0678ad972608b73df383d612c5e8de892a3ce4b14eabba76662a  -
+   before | workflow_entity 3ee7eabd4c06cdb8e436f90a5229e51b7bd15bda34e867e9e716a9666e29865a  -
    before | credentials_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
-   before | shared_workflow 8c7fba7d4fade45fa603dcb01571a2bf47ccb965bdc92b55da09085971d2d6c3  -
+   before | shared_workflow c80f5f49045d8d5dadada8e76b8bdfbd73e0c66804c28733f483476aa9669110  -
    before | shared_credentials e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
-   before | project f2a14dc05d6505308a68205d17cdaca79c7d2b16a897ceb8f9a5ad20bc50a944  -
-   before | project_relation 8d0e84b15fe3b3061287aef5003f763238219a3c86e8dfdfb5d253fa40f5979a  -
-   before | user 15b79847a7be4dea3db5b28ab83fbc3e159837c93edd861582da60f0f95f567b  -
+   before | project 82c916e5e1534973fee5d4b18b837c1b7ea5ba074cc5310328df2e5fd3aac41b  -
+   before | project_relation 669a1944154d3ccfc4143c16c72d95da20a4614813079ec1a6be418ab20e44ce  -
+   before | user fd7e45c328e6e415050697074dfee0a5b41a30d8131bf2fafc8b4b2125bff27a  -
    before | webhook_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
    before | tag_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
    before | workflows_tags e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
@@ -55,7 +56,7 @@ ok   M1 no secret in output/report (key, env secret, password inside WEBHOOK_URL
 ok   report file is private (mode 600)
 ok   M2 detects systemd + the unit name
 ok   detects the n8n version (2.41.5)
-ok   key fingerprint = sha256(key)[:12] (849274466659)
+ok   key fingerprint = sha256(key)[:12] (3388356df00f)
 ok   env var NAMES listed, secret value not; WEBHOOK_URL shown without its password
 ok   workflow count (3)
 ok   Execute Command flagged with its command (ffmpeg)

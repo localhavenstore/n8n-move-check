@@ -29,7 +29,7 @@ ok   SETUP n8n running (manual) and healthy
    | OK      [disk] user folder 5 MB, free 12436 MB (the move needs a full copy + a backup)
    | INFO    [run] n8n is running (pid 3504, user n8nuser), started by manual
    | INFO    [version] n8n 2.41.5 on Node 24.21.0 - the Docker move should use EXACTLY n8n 2.41.5 first, upgrade to 3.0 later
-   | INFO    [env] 6 n8n settings in its environment: GENERIC_TIMEZONE=Europe/(redacted), N8N_ENCRYPTION_KEY, N8N_PORT=5678, N8N_SECURE_COOKIE, NODES_EXCLUDE, WEBHOOK_URL=http://***@localhost:5678/...
+   | INFO    [env] 6 n8n settings in its environment: GENERIC_TIMEZONE=Europe/Nicosia, N8N_ENCRYPTION_KEY, N8N_PORT=5678, N8N_SECURE_COOKIE, NODES_EXCLUDE, WEBHOOK_URL=http://***@localhost:5678/...
    | INFO    [data] user folder: /home/n8nuser/.n8n
    | INFO    [env] NODES_EXCLUDE is set (in n8n 2.x it is how Execute Command / Local File Trigger get enabled) - it must go into the Docker .env too
    | INFO    [db] SQLite /home/n8nuser/.n8n/database.sqlite (1.4 MB) - copied with the user folder
