@@ -13,7 +13,7 @@ https://localhavenstore.github.io/guides/n8n-npm-to-docker.html
 sudo node move-check.js
 ```
 
-It changes nothing, restarts nothing and prints no secret. It writes `move-report.json` (also without secrets) into the current folder.
+It does not modify n8n or its data, restarts nothing and prints no secret. It writes `move-report.json` (also without secrets) into the current folder.
 
 ## What it reports
 
@@ -24,7 +24,7 @@ Each line is `OK`, `INFO`, `DECIDE` (you have to choose something) or `BLOCKER` 
 - n8n and Node versions; n8n's own Node requirement (n8n 2.41.5 needs Node 24 - `n8n --version` still answers on
   Node 22, but `n8n start` refuses)
 - The **encryption key**: where it is (environment or `~/.n8n/config`) and a 12-character fingerprint, never the key.
-  The Docker n8n needs exactly this key or no credential can be decrypted
+  The Docker n8n needs exactly this key - credentials encrypted with the original key cannot be decrypted with a different key
 - n8n settings in its environment (names only; a few harmless values like the port and time zone)
 - The user folder and the database (SQLite file size, or Postgres host + database name)
 - n8n's file folder `~/.n8n-files` (n8n 2.x default for Read/Write Files) - it is **outside** the user folder, so it
@@ -33,7 +33,7 @@ Each line is `OK`, `INFO`, `DECIDE` (you have to choose something) or `BLOCKER` 
 - The Linux user n8n runs as - the official image runs as uid 1000; if yours differs, host folders need the same uid
 - Workflows using **Execute Command** (the first word of each command - it must exist inside the container), files read
   or written on the host (those folders must be mounted), community nodes installed and used, and community packages
-  with **native code** (built for your system - they do not run in the official image)
+  with **native code** (built for your system - they may not run in the official image: platform, architecture or a needed rebuild)
 - A binary-data folder set with `N8N_BINARY_DATA_STORAGE_PATH` outside the user folder
 - n8n 3.0 blockers by workflow name: the 36 node types that are gone in the n8n v3 release-candidate image
   (`v3-rc-20261005`, compared with 2.41.5 - Function, Function Item, Cron, Interval, Item Lists, Read Binary File(s),
@@ -57,7 +57,7 @@ on Node 24.21.0, SQLite, started four ways: systemd (`EnvironmentFile`), pm2 (wi
 `npx` (pinned to the same version). Each time: read-only (every file
 of the user folder and 12 database tables - workflows, credentials, sharing, projects, users, webhooks, tags, variables,
 folders - unchanged, same n8n process), no secret in the output or the report (planted test secrets, including a
-password inside `WEBHOOK_URL`), the report file private (mode 600), and every item above detected. Also run as the n8n
+password inside `WEBHOOK_URL`), the report file private (mode 600), and the items above detected for these SQLite setups (the Postgres paths are tested with the paid kit). Also run as the n8n
 user without sudo. The test script is in this repository (`tests/test_vm_check.sh`). Not tested: other distributions,
 WSL2, other n8n versions. The community-package "verified" status is not checked (it needs n8n's online list) - check it
 in n8n.
@@ -69,12 +69,6 @@ copied (never moved) and checked, every credential decrypted inside the containe
 webhooks compared, your old install only stopped - and never two n8n at once, also after a reboot. For n8n run by
 systemd or pm2; tested with SQLite and Postgres.
 Link: https://localhavenstore.gumroad.com/l/n8n-move-kit
-
-## Next: the n8n 3.0 upgrade
-
-Once n8n runs in Docker, test your workflows on 3.0 before you upgrade: the free
-[n8n Upgrade Dry-Run](https://github.com/localhavenstore/n8n-upgrade-dry-run) runs copies of your workflows on your
-current version and on the new one (no network, throw-away containers) and shows node by node what changes.
 
 ## Licence
 

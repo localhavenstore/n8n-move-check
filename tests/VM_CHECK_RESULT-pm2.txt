@@ -1,4 +1,4 @@
-== n8n Move Check VM test 2026-10-06T17:00:01+03:00 - n8n 2.41.5, Node 24.21.0, pm2 + SQLite
+== n8n Move Check VM test 2026-10-07T16:08:08+03:00 - n8n 2.41.5, Node 24.21.0, pm2 + SQLite
 Ubuntu 24.04.5 LTS
 4
 7 GB
@@ -20,7 +20,7 @@ ok   SETUP n8n running (pm2) and healthy
    | DECIDE  [run] pm2: after the move, 'pm2 stop' (not delete) the old n8n so rollback stays one command
    | DECIDE  [data] n8n's file folder /home/n8nuser/.n8n-files (default for Read/Write Files) is OUTSIDE the user folder - copy it too and mount it at the same path, or workflows that read/write there break
    | DECIDE  [run] n8n runs as n8nuser (uid 1001); the official image runs as uid 1000 - run the container as 1001:1001 (and give it a writable home) so host folders keep the same rights
-   | DECIDE  [key] encryption key found in the environment (N8N_ENCRYPTION_KEY) (fingerprint 2e9395ee7251). The Docker n8n MUST get exactly this key - without it no credential can be decrypted. Save it in your password manager now.
+   | DECIDE  [key] encryption key found in the environment (N8N_ENCRYPTION_KEY) (fingerprint cfa5ebfcea1f). The Docker n8n MUST get exactly this key - without it no credential can be decrypted. Save it in your password manager now.
    | DECIDE  [host] Execute Command runs INSIDE the container after the move. Commands used: ffmpeg - each must exist in the image (or a small custom image) and any host files must be mounted
    | DECIDE  [host] host paths used in Execute Command: /home/n8nuser/data/in.mp4, /home/n8nuser/data/out.mp3 - these folders must be mounted into the container
    | DECIDE  [host] files read/written on the host: /home/n8nuser/data/report.txt - these folders must be mounted into the container
@@ -28,7 +28,7 @@ ok   SETUP n8n running (pm2) and healthy
    | DECIDE  [n8n 3.0] N8N_UNVERIFIED_PACKAGES_ENABLED changes from true to false in 3.0 (n8n v3.0 breaking-changes page) - check whether n8n-nodes-demo is verified in n8n; set N8N_UNVERIFIED_PACKAGES_ENABLED=true in the Docker env only if you need an unverified one
    | DECIDE  [docker] Docker is not installed yet (Docker Engine + compose plugin needed for the move)
    | OK      [version] Node 24.21.0 satisfies n8n's requirement (>=24.0.0)
-   | OK      [disk] user folder 5 MB, free 12392 MB (the move needs a full copy + a backup)
+   | OK      [disk] user folder 5 MB, free 12391 MB (the move needs a full copy + a backup)
    | INFO    [run] n8n is running (pid 3624, user n8nuser), started by pm2
    | INFO    [version] n8n 2.41.5 on Node 24.21.0 - the Docker move should use EXACTLY n8n 2.41.5 first, upgrade to 3.0 later
    | INFO    [env] 6 n8n settings in its environment: GENERIC_TIMEZONE=Europe/(redacted), N8N_ENCRYPTION_KEY, N8N_PORT=5678, N8N_SECURE_COOKIE, NODES_EXCLUDE, WEBHOOK_URL=http://***@localhost:5678/...
@@ -39,14 +39,14 @@ ok   SETUP n8n running (pm2) and healthy
    | INFO    [export] 3 workflows (0 active), 0 credentials
    | 
    | 2 blocker(s), 10 decision(s). Report saved to move-report.json (no secrets inside).
-   before | 106e9b59ad9cc932ac8bfef7d19cfa3211e5e8207782e29c26187e7e5b00cdb2  -
-   before | workflow_entity 11afde55d0c399a28e5d133a88ff7cc6b64796eaf42a55ef235446871685cc07  -
+   before | dd6646ab6e77f2aa3f0e66b1c34f196b63c0b33e32505c08bbc9eeb722ab4368  -
+   before | workflow_entity bbda7de5b74aea17777b80c0acc3c5b731f8c91e1ae98c38aa6d1dc498bc8148  -
    before | credentials_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
-   before | shared_workflow 267355db18fdbb44a5fcade2b004f87c7dd0ba3bcf2a947624b90f3442c83012  -
+   before | shared_workflow 77eef90fefdd11b5ccb75117256e3c118e63d6a2743cfce8b48d0ba489e34fa1  -
    before | shared_credentials e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
-   before | project 11081824329c7a700e8e7c6902f46613e049220d8d27a01fef272fec6082bace  -
-   before | project_relation 937a4d210e9e0bd59c1b74d055b78b464f53c06b34e8f9e972605e29893c7844  -
-   before | user 154a65b214a583881167b6614f0fc96f69038184ff84b422c3b399846658e304  -
+   before | project 46de2626709394412d44756f5ecd4d68801480b049bfc0464ac4b1e2c64cdfca  -
+   before | project_relation 4f5486d4e44239e063849d75815e9cf160be118a1f602ba9d4c2f8dcc41a0a09  -
+   before | user b7d4f1798b678d1314c07eff0f72bae9d242e0b209965518ebdcf1cd128463db  -
    before | webhook_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
    before | tag_entity e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
    before | workflows_tags e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
@@ -58,7 +58,7 @@ ok   M1 no secret in output/report (key, env secret, password inside WEBHOOK_URL
 ok   report file is private (mode 600)
 ok   M2 detects pm2 (also when pm2 itself runs under pm2-n8nuser.service)
 ok   detects the n8n version (2.41.5)
-ok   key fingerprint = sha256(key)[:12] (2e9395ee7251)
+ok   key fingerprint = sha256(key)[:12] (cfa5ebfcea1f)
 ok   env var NAMES listed, secret value not; WEBHOOK_URL shown without its password
 ok   workflow count (3)
 ok   Execute Command flagged with its command (ffmpeg)
