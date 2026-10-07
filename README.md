@@ -70,6 +70,12 @@ webhooks compared, your old install only stopped - and never two n8n at once, al
 systemd or pm2; tested with SQLite and Postgres.
 Link: https://localhavenstore.gumroad.com/l/n8n-move-kit
 
+## Next: the n8n 3.0 upgrade
+
+Once n8n runs in Docker, test your workflows on 3.0 before you upgrade: the free
+[n8n Upgrade Dry-Run](https://github.com/localhavenstore/n8n-upgrade-dry-run) runs copies of your workflows on your
+current version and on the new one (no network, throw-away containers) and shows node by node what changes.
+
 ## Licence
 
 MIT - see LICENSE. No warranty. Made with AI assistance and tested as above. Not affiliated with or endorsed by n8n GmbH; n8n is their trademark.
