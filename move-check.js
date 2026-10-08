@@ -6,7 +6,7 @@
 "use strict";
 const fs = require("fs"), os = require("os"), path = require("path"), cp = require("child_process"), crypto = require("crypto");
 
-const VERSION = "1.0.2";
+const VERSION = "1.0.4";
 const SAFE_ENV_SHOWN = new Set(["N8N_PORT", "N8N_HOST", "N8N_PROTOCOL", "WEBHOOK_URL", "GENERIC_TIMEZONE", "TZ", "DB_TYPE",
   "DB_POSTGRESDB_HOST", "DB_POSTGRESDB_PORT", "DB_POSTGRESDB_DATABASE", "N8N_USER_FOLDER", "EXECUTIONS_MODE",
   "N8N_RUNNERS_ENABLED", "N8N_BINARY_DATA_MODE"]);                     // non-secret settings: value shown
@@ -170,6 +170,25 @@ const byType = {};
 for (const w of workflows) for (const n of w.nodes || []) (byType[n.type] = byType[n.type] || []).push({ wf: w.name, n });
 if (byType["n8n-nodes-base.aiTransform"]) add("n8n 3.0", "INFO", `AI Transform nodes are converted to Code nodes by 3.0 - check them after the upgrade: ${[...new Set(byType["n8n-nodes-base.aiTransform"].map((x) => x.wf))].join(", ")}`);
 for (const [t, label] of Object.entries(REMOVED_NODES)) if (byType[t]) add("n8n 3.0", "BLOCKER", `${label} node is removed in 3.0 - used in: ${[...new Set(byType[t].map((x) => x.wf))].join(", ")} (replace it before upgrading; the move itself is fine)`);
+// n8n issue #40606 (7 Oct 2026, open): on Postgres, n8n 2.30+ stores trigger status in a varchar(36) column; a TRIGGER-like
+// node (trigger nodes, Webhook, Wait, "send and wait" operations) with an id longer than 36 characters (common after API /
+// source-control imports) makes publishing silently keep the OLD version.
+const triggerLike = (n) => /trigger$/i.test(String(n.type || "").split(".").pop()) || /\.(webhook|wait|form)$/.test(String(n.type || ""))
+  || n.parameters?.operation === "sendAndWait";
+const affectsVersion = (v) => {               // 1.x: no; 2.30+ and 3+: yes; unreadable: assume yes (conservative)
+  const t = String(v || "").trim();
+  if (/^1(\.|$)/.test(t)) return false;                      // any 1.x predates the 2.30 table
+  const m = /^(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?$/.exec(t);   // full version only (e.g. 2.42.4, 3.0.0-rc.1)
+  if (!m) return true;
+  const major = +m[1];
+  return major >= 3 || (major === 2 && +m[2] >= 30);
+};
+const longIds = workflows.flatMap((w) => (w.nodes || []).filter((n) => typeof n.id === "string" && n.id.length > 36 && triggerLike(n)).map(() => w.name));
+if (longIds.length) {
+  add("publish", dbType.startsWith("postgres") && affectsVersion(n8nVersion) ? "DECIDE" : "INFO",
+      `${longIds.length} trigger-like node(s) have an id longer than 36 characters (in: ${[...new Set(longIds)].join(", ")}) - on Postgres with n8n 2.30+ `
+      + `publishing such a workflow can silently keep serving the OLD version (n8n issue #40606). Fix: re-create the node (copy/paste it) so it gets a normal id.`);
+}
 const exprHits = workflows.filter((w) => JSON.stringify(w.nodes || []).match(/\$getPairedItem\(|\$evaluateExpression\(/));
 if (exprHits.length) add("n8n 3.0", "BLOCKER", `$getPairedItem()/$evaluateExpression() are removed in 3.0 - used in: ${exprHits.map((w) => w.name).join(", ")}`);
 if (byType["n8n-nodes-base.executeCommand"]) {

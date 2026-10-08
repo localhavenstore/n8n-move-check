@@ -86,6 +86,7 @@ check "detects the n8n version ($N8N_VERSION)" 'grep -q "n8n $N8N_VERSION on Nod
 check "key fingerprint = sha256(key)[:12] ($FP)" 'grep -q "fingerprint $FP" <<< "$OUT" && grep -q "\"key_fingerprint\": \"$FP\"" <<< "$REP"'
 check "env var NAMES listed, secret value not; WEBHOOK_URL shown without its password" 'grep -q "N8N_ENCRYPTION_KEY" <<< "$OUT" && grep -q "N8N_PORT=5678" <<< "$OUT" && grep -q "WEBHOOK_URL=http://\*\*\*@localhost:5678/" <<< "$OUT"'
 check "workflow count (3)" 'grep -q "3 workflows" <<< "$OUT"'
+check "1.0.4: trigger node id > 36 chars reported (issue #40606; INFO on SQLite), non-trigger long id NOT reported" 'l=$(grep "#40606" <<< "$OUT"); grep -q "Shell backup" <<< "$l" && ! grep -q "File writer" <<< "$l"'
 check "Execute Command flagged with its command (ffmpeg)" 'grep -q "Execute Command runs INSIDE the container.*ffmpeg" <<< "$OUT"'
 check "Function node = 3.0 blocker by workflow name" 'grep -q "BLOCKER.*Function node is removed in 3.0 - used in: Legacy function flow" <<< "$OUT"'
 check "host paths INSIDE Execute Command flagged (/home/n8nuser/data/in.mp4)" 'grep -q "host paths used in Execute Command: .*/home/n8nuser/data/in.mp4" <<< "$OUT"'

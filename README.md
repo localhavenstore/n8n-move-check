@@ -41,6 +41,12 @@ Each line is `OK`, `INFO`, `DECIDE` (you have to choose something) or `BLOCKER` 
   and 3.0 setting changes (removed variables, `N8N_DEFAULT_BINARY_DATA_MODE=default`, the 60 s Code-node timeout, unverified community packages off by default)
 - Free disk space for a copy plus a backup, and whether Docker is installed
 
+## Changes in 1.0.4 (8 Oct 2026)
+- New warning: a trigger-like node (Webhook, Wait, triggers, "send and wait") whose id is longer than 36 characters. On
+  Postgres with n8n 2.30+ publishing such a workflow can silently keep serving the OLD version (n8n issue #40606, open).
+  Fix: re-create that node (copy/paste) so it gets a normal id. On SQLite it is shown as information only. We did not
+  reproduce the bug ourselves; the warning follows the issue report.
+
 ## Changes in 1.0.2 (6 Oct 2026)
 - n8n 3.0 new defaults from n8n's official v3.0 breaking-changes page: if you have community packages installed, the check now
   names `N8N_UNVERIFIED_PACKAGES_ENABLED` (true -> false in 3.0) and says when to set it; the Code-step timeout note
